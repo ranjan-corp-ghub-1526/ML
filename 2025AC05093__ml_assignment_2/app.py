@@ -1,4 +1,5 @@
 import json
+import math
 import pickle
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -99,8 +100,24 @@ def main():
 
         prediction_result = test_data.copy()
         prediction_result["Diagnosis (Predicted)"] = Y_prediction_labels
-        st.subheader("Predictions (first 300 rows)")
-        st.dataframe(prediction_result.head(300))
+        st.subheader("Predictions")
+        total_rows = len(prediction_result)
+ 
+        page_col, size_col, info_col = st.columns([1, 1, 2])
+        with size_col:
+            page_size = st.selectbox("Rows per page", [10, 20, 50, 100, 300], index=1)
+        total_pages = max(1, math.ceil(total_rows / page_size))
+        with page_col:
+            page_number = st.number_input(
+                "Page", min_value=1, max_value=total_pages, value=1, step=1
+            )
+        with info_col:
+            st.caption(f"Page {page_number} of {total_pages} — {total_rows} rows total")
+ 
+        start_row = (page_number - 1) * page_size
+        end_row = start_row + page_size
+        st.dataframe(prediction_result.iloc[start_row:end_row], use_container_width=True)
+ 
 
         Y_true = lbl_encoder.transform(Y_test)
         Y_probability = model.predict_proba(X_test_scaled)[:, 1]
