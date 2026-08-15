@@ -47,11 +47,10 @@ def load_models():
 
 def main():
     st.set_page_config(page_title="Breast Cancer Diagnosis Classifier", layout="wide")
-    st.title(":ribbon: Breast Cancer Diagnosis Classifier")
+    st.title("Breast Cancer Diagnosis Classifier")
     st.caption(
-        "ML Assignment 2 - compares Logistic Regression, Decision Tree, kNN, "
-        "Naive Bayes and Random Forest on the Breast Cancer Wisconsin "
-        "(Diagnostic) dataset."
+        "ML Assignment 2 - Logistic Regression, Decision Tree, kNN, "
+        "Naive Bayes and Random Forest on the Breast Cancer "
     )
 
     required_files = list(MODEL_FILES.values()) + [
@@ -65,14 +64,14 @@ def main():
         st.error(f"Missing files: {', '.join(missing_files)}")
         return
 
-    models, scaler, label_encoder, feature_columns = load_models()
+    models, standard_scaler, lbl_encoder, feature_columns = load_models()
 
     st.sidebar.header("Controls")
     model_name = st.sidebar.selectbox("Select a model", list(models.keys()))
     uploaded_file = st.sidebar.file_uploader("Upload the test data (CSV)", type="csv")
 
     if uploaded_file is None:
-        st.info("Upload a CSV from the sidebar to see predictions and metrics.")
+        st.info("Upload a CSV to see predictions and metrics.")
         st.subheader("Expected columns")
         st.code(", ".join(feature_columns + ["diagnosis"]))
         return
@@ -81,12 +80,12 @@ def main():
     missing_cols = [col for col in feature_columns if col not in test_data.columns]
 
     if missing_cols:
-        st.error(f"Missing columns in the uploaded data: {', '.join(missing_cols)}")
+        st.error(f"Missing feature columns in the uploaded data: {', '.join(missing_cols)}")
         return
 
     desired_column = "diagnosis"
     if desired_column not in test_data.columns:
-        st.error(f"Missing column in the uploaded data: {desired_column}")
+        st.error(f"Missing output column in the uploaded data: {desired_column}")
         return
     else:
         model = models[model_name]
@@ -94,16 +93,16 @@ def main():
         X_test = test_data[feature_columns]
         Y_test = test_data[desired_column]
 
-        X_test_scaled = scaler.transform(X_test)
+        X_test_scaled = standard_scaler.transform(X_test)
         Y_prediction = model.predict(X_test_scaled)
-        Y_prediction_labels = label_encoder.inverse_transform(Y_prediction)
+        Y_prediction_labels = lbl_encoder.inverse_transform(Y_prediction)
 
-        result_df = test_data.copy()
-        result_df["Predicted Diagnosis"] = Y_prediction_labels
-        st.subheader("Predictions (first 50 rows)")
-        st.dataframe(result_df.head(50))
+        prediction_result = test_data.copy()
+        prediction_result["Diagnosis (Predicted)"] = Y_prediction_labels
+        st.subheader("Predictions (first 300 rows)")
+        st.dataframe(prediction_result.head(300))
 
-        Y_true = label_encoder.transform(Y_test)
+        Y_true = lbl_encoder.transform(Y_test)
         Y_probability = model.predict_proba(X_test_scaled)[:, 1]
 
         evaluation_metrics = {
@@ -127,9 +126,9 @@ def main():
             conf_matrix,
             annot=True,
             fmt="d",
-            cmap="Blues",
-            xticklabels=label_encoder.classes_,
-            yticklabels=label_encoder.classes_,
+            cmap="Greens",
+            xticklabels=lbl_encoder.classes_,
+            yticklabels=lbl_encoder.classes_,
             ax=ax,
         )
         ax.set_xlabel("Predicted")
@@ -140,7 +139,7 @@ def main():
         class_report = classification_report(
             Y_true,
             Y_prediction,
-            target_names=list(label_encoder.classes_),
+            target_names=list(lbl_encoder.classes_),
             output_dict=True,
         )
         st.dataframe(pd.DataFrame(class_report).T.round(5))
