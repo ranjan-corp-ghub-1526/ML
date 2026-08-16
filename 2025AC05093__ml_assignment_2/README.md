@@ -12,38 +12,40 @@ explored without touching code.
 
 ## b. Dataset Description
 
-- **Source:** Breast Cancer Wisconsin (Diagnostic) Data Set - originally
+- *Source:* Breast Cancer Data Set - originally
   from the UCI Machine Learning Repository, also widely mirrored on Kaggle
   as [Breast Cancer Wisconsin (Diagnostic) Data Set](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data).
-- **File used:** `data/breast_cancer.csv` (the uploaded `data.csv`, with the
-  `id` column and the empty trailing `Unnamed: 32` column dropped).
-- **Instances:** 569 (exceeds the 500-instance minimum)
-- **Features:** 30 numeric features (exceeds the 12-feature minimum). For
+- *File used:* `data/breast_cancer.csv` 
+- *Instances:* 569 (exceeds the 500-instance minimum)
+- *Features:* 30 numeric features (exceeds the 12-feature minimum). For
   each of 10 base measurements (`radius`, `texture`, `perimeter`, `area`,
   `smoothness`, `compactness`, `concavity`, `concave points`, `symmetry`,
   `fractal_dimension`) three statistics are provided: `_mean`, `_se`
   (standard error) and `_worst` (mean of the three largest values).
-- **Target:** `diagnosis` - `M` (malignant) or `B` (benign). This is a
-  **binary** classification problem.
-- **Class balance:** 357 benign (62.7%) vs. 212 malignant (37.3%) -
+- *Target:* `diagnosis` - `M` (malignant) or `B` (benign). This is a
+  *binary* classification problem.
+- *Class balance:* 357 benign (62.7%) vs. 212 malignant (37.3%) -
   moderately imbalanced, so accuracy alone isn't the full picture; recall on
   the malignant class and MCC are worth highlighting in the observations
-  (missing a malignant case is the costlier error).
-- **Preprocessing:** all 30 features are continuous and on very different
+  (missing a malignant case is the main error).
+- *Preprocessing:* all 30 features are continuous and on very different
   scales (e.g. `area_mean` is in the hundreds, `smoothness_mean` is around
   0.1), so they are standardized (`sklearn.preprocessing.StandardScaler`,
   fit on the training set only) before being fed to every model. The target
   is label-encoded (`B`→0, `M`→1).
-- **Train/test split:** stratified 80/20 split, `random_state=42`. The held
-  out 20% (113 rows) is exported as `test_data.csv` and is what you upload
-  to the Streamlit app.
+- *Train/test split:* stratified 80/20 split, `random_state=42`. The held
+  out 20% (113 rows) is exported as `test_data.csv`.
 
 ## c. GitHub Repository Link
 
-> **TODO:** replace with your repository URL after you push, e.g.
-> `https://github.com/<your-username>/ml-assignment-2-breast-cancer-classifier`
+> `https://github.com/ranjan-corp-ghub-1526/ML`
 
-## d. Models Used
+- Screenshots uploaded in the Repository
+
+## d. Streamlit Link
+> https://ranjan2025ac05093.streamlit.app/
+
+## e. Models Used
 
 Five classifiers are trained on the identical train/test split in
 `model/train_models.py`:
@@ -74,34 +76,21 @@ Five classifiers are trained on the identical train/test split in
 | kNN | Strong precision (97.44%, close behind Random Forest) but recall (90.48%) trails Logistic Regression, meaning it misses slightly more malignant cases. Performs well because distance-based methods benefit a lot from the standardized features. |
 | Naive Bayes | Lowest score on every single metric (AUC 0.908, F1 0.889, MCC 0.829, recall 85.71%). Its core assumption — that features are independent given the class — doesn't hold well here, since many tumour measurements (radius, perimeter, area) are naturally correlated with each other. |
 | Random Forest (Ensemble) | Highest precision of all models — a perfect 1.0, meaning zero benign cases were misclassified as malignant on this test set — and the highest MCC (0.926), reflecting the benefit of averaging 200 trees over one. Recall (90.48%) is a touch below Logistic Regression, so it's marginally more likely to miss a malignant case in exchange for never raising a false alarm. |
-| **Overall Winner for your dataset?** | **Logistic Regression**, by a narrow margin over Random Forest. LR leads on recall, F1, and AUC; Random Forest leads on precision and MCC — genuinely close. In a cancer-diagnosis context, missing a malignant tumor (false negative) is usually costlier than a false alarm, so LR's higher recall tips it as the winner here, though Random Forest is a very reasonable alternative pick if precision/MCC matter more for your framing. |
+| *Overall Winner for your dataset?* | *Logistic Regression*, by a narrow margin over Random Forest. LR leads on recall, F1, and AUC; Random Forest leads on precision and MCC — genuinely close. In a cancer-diagnosis context, missing a malignant tumor (false negative) is usually costlier than a false alarm, so LR's higher recall tips it as the winner here, though Random Forest is a very reasonable alternative pick if precision/MCC matter more for your framing. |
 
 
 ## How to Run
 
-1. **Install dependencies**
+1. *Install dependencies*
    ```bash
    pip install -r requirements.txt
    ```
-2. **Train the models** (run this on BITS Virtual Lab as required by the
-   assignment, and take your screenshot here)
+2. *Train the models* 
    ```bash
    python model/train_models.py
    ```
-   This prints the comparison table and writes the `.pkl` model files plus
-   `model/comparison_metrics.csv` and refreshes `test_data.csv`.
-3. **Test the app locally**
+3. *Test the app locally*
    ```bash
-   streamlit run app.py
+   python -m streamlit run app.py
    ```
-4. **Push to GitHub** - commit `app.py`, `requirements.txt`, `README.md`,
-   `test_data.csv`, `data/`, and `model/` (including the generated `.pkl`
-   files, so the deployed app doesn't need to retrain).
-5. **Deploy on Streamlit Community Cloud**
-   - Go to <https://streamlit.io/cloud>, sign in with GitHub
-   - "New app" → select this repository → branch `main` → file `app.py` →
-     Deploy
-6. In the app: pick a model from the sidebar dropdown, upload `test_data.csv`,
-   and view predictions, accuracy/AUC/precision/recall/F1/MCC, the confusion
-   matrix, and the classification report.
 
