@@ -45,7 +45,7 @@ Five classifiers are trained on the identical train/test split in
 
 1. Logistic Regression
 2. Decision Tree Classifier
-3. K-Nearest Neighbor Classifier (k=5)
+3. K-Nearest Neighbor Classifier
 4. Naive Bayes Classifier (Gaussian - fits standardized continuous features
    naturally)
 5. Random Forest Classifier (Ensemble, 200 trees)
