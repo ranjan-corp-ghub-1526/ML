@@ -17,24 +17,17 @@ explored without touching code.
   as [Breast Cancer Wisconsin (Diagnostic) Data Set](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data).
 - *File used:* `data/breast_cancer.csv` 
 - *Instances:* 569 (exceeds the 500-instance minimum)
-- *Features:* 30 numeric features (exceeds the 12-feature minimum). For
-  each of 10 base measurements (`radius`, `texture`, `perimeter`, `area`,
-  `smoothness`, `compactness`, `concavity`, `concave points`, `symmetry`,
-  `fractal_dimension`) three statistics are provided: `_mean`, `_se`
-  (standard error) and `_worst` (mean of the three largest values).
-- *Target:* `diagnosis` - `M` (malignant) or `B` (benign). This is a
-  *binary* classification problem.
+- *Features:* The dataset has 30 numerical features, so it satisfies the minimum requirement of 12 features. These features are based on 10 measurements: radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension. For each measurement, three values are given: mean, standard error (SE), and worst value.
+- *Target:* The target column is diagnosis. It contains two classes, M (malignant) and B (benign). So, the problem is a binary classification problem where the model has to predict whether a case is malignant or benign.
 - *Class balance:* 357 benign (62.7%) vs. 212 malignant (37.3%) -
-  moderately imbalanced, so accuracy alone isn't the full picture; recall on
-  the malignant class and MCC are worth highlighting in the observations
-  (missing a malignant case is the main error).
+  Did not consider accuracy alone for comparing the models. I also looked at recall for the malignant class and MCC, since predicting a malignant case as benign is more serious.
 - *Preprocessing:* all 30 features are continuous and on very different
   scales (e.g. `area_mean` is in the hundreds, `smoothness_mean` is around
   0.1), so they are standardized (`sklearn.preprocessing.StandardScaler`,
   fit on the training set only) before being fed to every model. The target
   is label-encoded (`B`→0, `M`→1).
 - *Train/test split:* stratified 80/20 split, `random_state=42`. The held
-  out 20% (113 rows) is exported as `test_data.csv`.
+  out 20% (110+ rows) is exported as `test_data.csv`.
 
 ## c. GitHub Repository Link
 
